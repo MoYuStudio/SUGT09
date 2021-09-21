@@ -50,6 +50,14 @@ class MainGame:
         # 0 tile_boarder 1 land 2 army 3 mouse_pos 4 dv_code
         self.tilemap = [[[0,int(noise.pnoise2((x/self.freq)+self.seed,(y/self.freq)+self.seed,self.octaves)*100+50),0,0,0] for x in range(0,self.boarder,1)] for y in range(0,self.boarder,1)]
 
+    def tile_boarder(self,color,pos):
+        pygame.draw.rect(self.screen,(color),(pos[0]*self.tile_size, pos[1]*self.tile_size, self.tile_size-self.tile_outline, self.tile_outline_beclick))
+        pygame.draw.rect(self.screen,(color),(pos[0]*self.tile_size, (pos[1]+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, self.tile_size-self.tile_outline, self.tile_outline_beclick))
+        
+        pygame.draw.rect(self.screen,(color),(pos[0]*self.tile_size, pos[1]*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
+        pygame.draw.rect(self.screen,(color),((pos[0]+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, pos[1]*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
+        
+
     def gameloop(self): 
 
         while True:
@@ -143,20 +151,9 @@ class MainGame:
                             pass
 
                         if tile_info[3] == 1:
-                            pygame.draw.rect(self.screen,(255,0,0,0),(tilemap_x*self.tile_size, tilemap_y*self.tile_size, self.tile_size-self.tile_outline, self.tile_outline_beclick))
-                            pygame.draw.rect(self.screen,(255,0,0,0),(tilemap_x*self.tile_size, (tilemap_y+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, self.tile_size-self.tile_outline, self.tile_outline_beclick))
-                            
-                            pygame.draw.rect(self.screen,(255,0,0,0),(tilemap_x*self.tile_size, tilemap_y*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
-                            pygame.draw.rect(self.screen,(255,0,0,0),((tilemap_x+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, tilemap_y*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
-                            
-                            
-            
-            pygame.draw.rect(self.screen,(255,255,255,0),((self.mouse_pos[0]//self.tile_size)*self.tile_size, (self.mouse_pos[1]//self.tile_size)*self.tile_size, self.tile_size-self.tile_outline, self.tile_outline_beclick))
-            pygame.draw.rect(self.screen,(255,255,255,0),((self.mouse_pos[0]//self.tile_size)*self.tile_size, ((self.mouse_pos[1]//self.tile_size)+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, self.tile_size-self.tile_outline, self.tile_outline_beclick))
-            
-            pygame.draw.rect(self.screen,(255,255,255,0),((self.mouse_pos[0]//self.tile_size)*self.tile_size, (self.mouse_pos[1]//self.tile_size)*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
-            pygame.draw.rect(self.screen,(255,255,255,0),(((self.mouse_pos[0]//self.tile_size)+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, (self.mouse_pos[1]//self.tile_size)*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
-            
+                            main_game.tile_boarder((255,0,0,0),[tilemap_x,tilemap_y])
+
+            main_game.tile_boarder((255,255,255,0),[self.mouse_pos[0]//self.tile_size,self.mouse_pos[1]//self.tile_size])
 
             pygame.display.update()
 
