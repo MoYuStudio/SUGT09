@@ -15,6 +15,8 @@ class MainGame:
         pygame.init()
         pygame.mixer.init()
 
+        self.tile_outline = 1
+
         self.tile_size = 45
         self.boarder = 64
 
@@ -44,8 +46,8 @@ class MainGame:
 
         self.seed = random.randint(100000, 999999)
 
-        # 0 land 1 army
-        self.tilemap = [[[int(noise.pnoise2((x/self.freq)+self.seed,(y/self.freq)+self.seed,self.octaves)*100+50),random.randint(0,100)] for x in range(0,self.boarder,1)] for y in range(0,self.boarder,1)]
+        # 0 mouse_pos 1 land 2 army 3 dv_code
+        self.tilemap = [[[0,int(noise.pnoise2((x/self.freq)+self.seed,(y/self.freq)+self.seed,self.octaves)*100+50),random.randint(0,100),0] for x in range(0,self.boarder,1)] for y in range(0,self.boarder,1)]
 
     def gameloop(self): 
 
@@ -61,28 +63,75 @@ class MainGame:
 
                     tile_info = self.tilemap[tilemap_x][tilemap_y]
 
-                    if -100 <=tile_info[0]<= 15:
-                        pygame.draw.rect(self.screen,(100,149,237),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+                    if tile_info[3] == 0:
 
-                    if 16 <=tile_info[0]<= 35:
-                        pygame.draw.rect(self.screen,(135,206,235),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+                        # 1 =================================================================
 
-                    if 36 <=tile_info[0]<= 45:
-                        pygame.draw.rect(self.screen,(176,224,230),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+                        if -100 <=tile_info[1]<= 15:
+                            tile_info[1] = 1
+                            
+                        if 16 <=tile_info[1]<= 35:
+                            tile_info[1] = 2
+                            
+                        if 36 <=tile_info[1]<= 45:
+                            tile_info[1] = 3
+                            
+                        if 46 <=tile_info[1]<= 58:
+                            tile_info[1] = 4
+                            
+                        if 59 <=tile_info[1]<= 70:
+                            tile_info[1] = 5
+                            
+                        if 70 <=tile_info[1]<= 110:
+                            tile_info[1] = 6
 
-                    if 46 <=tile_info[0]<= 58:
-                        pygame.draw.rect(self.screen,(240,230,140),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+                        # 2 =================================================================
 
-                    if 59 <=tile_info[0]<= 70:
-                        pygame.draw.rect(self.screen,(0,179,113),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+                        if tile_info[1] == 1 or tile_info[1] == 2 or tile_info[1] == 3:
+                            tile_info[2] = 0
+                            
+                        tile_info[3] = 1
 
-                    if 70 <=tile_info[0]<= 110:
-                        pygame.draw.rect(self.screen,(46,139,87),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+                    if tile_info[3] == 1:
 
-                    army_text = self.font1.render(str(tile_info[1]), True, (255, 255, 255))
+                        # 0 =================================================================
+
+                        if tile_info[0] == 0:
+                            pygame.draw.rect(self.screen,(0,0,0,35),(tilemap_x*self.tile_size-self.tile_outline,tilemap_y*self.tile_size-self.tile_outline,self.tile_size+self.tile_outline*2,self.tile_size+self.tile_outline*2))
+
+                        if tile_info[0] == 1:
+                            #pygame.draw.rect(self.screen,(255,0,0,35),(tilemap_x*self.tile_size-self.tile_outline,tilemap_y*self.tile_size-self.tile_outline,self.tile_size+self.tile_outline*2,self.tile_size+self.tile_outline*2))
+                            pass
+
+                        if tile_info[0] == 2:
+                            pass
+
+                        # 1 =================================================================
+
+                        if tile_info[1] == 1:
+                            pygame.draw.rect(self.screen,(100,149,237),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+
+                        if tile_info[1] == 2:
+                            pygame.draw.rect(self.screen,(135,206,235),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+
+                        if tile_info[1] == 3:
+                            pygame.draw.rect(self.screen,(176,224,230),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+
+                        if tile_info[1] == 4:
+                            pygame.draw.rect(self.screen,(240,230,140),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+
+                        if tile_info[1] == 5:
+                            pygame.draw.rect(self.screen,(0,179,113),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+
+                        if tile_info[1] == 6:
+                            pygame.draw.rect(self.screen,(46,139,87),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+
+
+                    army_text = self.font1.render(str(tile_info[2]), True, (255,255,255,100))
                     self.screen.blit(army_text,(tilemap_x*self.tile_size,tilemap_y*self.tile_size))
-
-            pygame.draw.rect(self.screen,(255,255,255),((self.mouse_pos[0]//self.tile_size)*self.tile_size,(self.mouse_pos[1]//self.tile_size)*self.tile_size,self.tile_size,self.tile_size))
+            
+            
+            #pygame.draw.rect(self.screen,(255,255,255,0),((self.mouse_pos[0]//self.tile_size)*self.tile_size,(self.mouse_pos[1]//self.tile_size)*self.tile_size,self.tile_size,self.tile_size))
 
             pygame.display.update()
 
@@ -92,6 +141,8 @@ class MainGame:
                     sys.exit()
                 if event.type == pygame.MOUSEMOTION:
                     self.mouse_pos = event.pos
+                    #(self.tilemap[self.mouse_pos[0]//self.tile_size][self.mouse_pos[1]//self.tile_size])[0] = 1
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pass
 
