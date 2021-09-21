@@ -16,6 +16,7 @@ class MainGame:
         pygame.mixer.init()
 
         self.tile_outline = 1
+        self.tile_outline_beclick = 3
 
         self.tile_size = 45
         self.boarder = 64
@@ -46,8 +47,8 @@ class MainGame:
 
         self.seed = random.randint(100000, 999999)
 
-        # 0 mouse_pos 1 land 2 army 3 dv_code
-        self.tilemap = [[[0,int(noise.pnoise2((x/self.freq)+self.seed,(y/self.freq)+self.seed,self.octaves)*100+50),random.randint(0,100),0] for x in range(0,self.boarder,1)] for y in range(0,self.boarder,1)]
+        # 0 tile_boarder 1 land 2 army 3 mouse_pos 4 dv_code
+        self.tilemap = [[[0,int(noise.pnoise2((x/self.freq)+self.seed,(y/self.freq)+self.seed,self.octaves)*100+50),0,0,0] for x in range(0,self.boarder,1)] for y in range(0,self.boarder,1)]
 
     def gameloop(self): 
 
@@ -63,7 +64,7 @@ class MainGame:
 
                     tile_info = self.tilemap[tilemap_x][tilemap_y]
 
-                    if tile_info[3] == 0:
+                    if tile_info[4] == 0:
 
                         # 1 =================================================================
 
@@ -84,15 +85,16 @@ class MainGame:
                             
                         if 70 <=tile_info[1]<= 110:
                             tile_info[1] = 6
+                            tile_info[2] = random.randint(0,100)
 
                         # 2 =================================================================
 
                         if tile_info[1] == 1 or tile_info[1] == 2 or tile_info[1] == 3:
                             tile_info[2] = 0
                             
-                        tile_info[3] = 1
+                        tile_info[4] = 1
 
-                    if tile_info[3] == 1:
+                    if tile_info[4] == 1:
 
                         # 0 =================================================================
 
@@ -126,12 +128,35 @@ class MainGame:
                         if tile_info[1] == 6:
                             pygame.draw.rect(self.screen,(46,139,87),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
 
+                        # 2 =================================================================
 
-                    army_text = self.font1.render(str(tile_info[2]), True, (255,255,255,100))
-                    self.screen.blit(army_text,(tilemap_x*self.tile_size,tilemap_y*self.tile_size))
+                        if tile_info[2] == 0:
+                            pass
+
+                        if tile_info[2] != 0:
+                            army_text = self.font1.render(str(tile_info[2]), True, (255,255,255,100))
+                            self.screen.blit(army_text,(tilemap_x*self.tile_size,tilemap_y*self.tile_size))
+
+                        # 3 =================================================================
+
+                        if tile_info[3] == 0:
+                            pass
+
+                        if tile_info[3] == 1:
+                            pygame.draw.rect(self.screen,(255,0,0,0),(tilemap_x*self.tile_size, tilemap_y*self.tile_size, self.tile_size-self.tile_outline, self.tile_outline_beclick))
+                            pygame.draw.rect(self.screen,(255,0,0,0),(tilemap_x*self.tile_size, (tilemap_y+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, self.tile_size-self.tile_outline, self.tile_outline_beclick))
+                            
+                            pygame.draw.rect(self.screen,(255,0,0,0),(tilemap_x*self.tile_size, tilemap_y*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
+                            pygame.draw.rect(self.screen,(255,0,0,0),((tilemap_x+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, tilemap_y*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
+                            
+                            
             
+            pygame.draw.rect(self.screen,(255,255,255,0),((self.mouse_pos[0]//self.tile_size)*self.tile_size, (self.mouse_pos[1]//self.tile_size)*self.tile_size, self.tile_size-self.tile_outline, self.tile_outline_beclick))
+            pygame.draw.rect(self.screen,(255,255,255,0),((self.mouse_pos[0]//self.tile_size)*self.tile_size, ((self.mouse_pos[1]//self.tile_size)+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, self.tile_size-self.tile_outline, self.tile_outline_beclick))
             
-            #pygame.draw.rect(self.screen,(255,255,255,0),((self.mouse_pos[0]//self.tile_size)*self.tile_size,(self.mouse_pos[1]//self.tile_size)*self.tile_size,self.tile_size,self.tile_size))
+            pygame.draw.rect(self.screen,(255,255,255,0),((self.mouse_pos[0]//self.tile_size)*self.tile_size, (self.mouse_pos[1]//self.tile_size)*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
+            pygame.draw.rect(self.screen,(255,255,255,0),(((self.mouse_pos[0]//self.tile_size)+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, (self.mouse_pos[1]//self.tile_size)*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
+            
 
             pygame.display.update()
 
@@ -141,10 +166,9 @@ class MainGame:
                     sys.exit()
                 if event.type == pygame.MOUSEMOTION:
                     self.mouse_pos = event.pos
-                    #(self.tilemap[self.mouse_pos[0]//self.tile_size][self.mouse_pos[1]//self.tile_size])[0] = 1
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pass
+                    (self.tilemap[self.mouse_pos[0]//self.tile_size][self.mouse_pos[1]//self.tile_size])[3] = 1
 
             self.clock.tick(self.window_fps)
 
