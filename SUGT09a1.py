@@ -18,6 +18,9 @@ class MainGame:
         self.tile_outline = 1
         self.tile_outline_beclick = 3
 
+        self.army_green = 0
+        self.army_red = 0
+
         self.tile_size = 45
         self.boarder = 64
 
@@ -34,6 +37,9 @@ class MainGame:
         self.window_title = 'SUGT09'
 
         self.screen = pygame.display.set_mode((self.window_size),pygame.RESIZABLE)
+
+        self.tile_outline_surface = pygame.Surface((self.window_size)).convert_alpha()
+        self.country_surface = pygame.Surface((self.window_size)).convert_alpha()
 
         self.clock = pygame.time.Clock()
 
@@ -57,6 +63,9 @@ class MainGame:
         pygame.draw.rect(self.screen,(color),(pos[0]*self.tile_size, pos[1]*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
         pygame.draw.rect(self.screen,(color),((pos[0]+1)*self.tile_size-self.tile_outline-self.tile_outline_beclick, pos[1]*self.tile_size, self.tile_outline_beclick, self.tile_size-self.tile_outline)) 
         
+    def country_builder(self):
+        #pygame.draw.rect(self.country_surface,(255,0,0,100),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+        pass
 
     def gameloop(self): 
 
@@ -107,7 +116,8 @@ class MainGame:
                         # 0 =================================================================
 
                         if tile_info[0] == 0:
-                            pygame.draw.rect(self.screen,(0,0,0,35),(tilemap_x*self.tile_size-self.tile_outline,tilemap_y*self.tile_size-self.tile_outline,self.tile_size+self.tile_outline*2,self.tile_size+self.tile_outline*2))
+                            pygame.draw.rect(self.tile_outline_surface,(0,0,0,35),(tilemap_x*self.tile_size-self.tile_outline,tilemap_y*self.tile_size-self.tile_outline,self.tile_size+self.tile_outline*2,self.tile_size+self.tile_outline*2))
+                            #self.screen.blit(self.tile_outline_surface, (0, 0))
 
                         if tile_info[0] == 1:
                             #pygame.draw.rect(self.screen,(255,0,0,35),(tilemap_x*self.tile_size-self.tile_outline,tilemap_y*self.tile_size-self.tile_outline,self.tile_size+self.tile_outline*2,self.tile_size+self.tile_outline*2))
@@ -135,6 +145,8 @@ class MainGame:
 
                         if tile_info[1] == 6:
                             pygame.draw.rect(self.screen,(46,139,87),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+                            pygame.draw.rect(self.country_surface,(255,0,0,100),(tilemap_x*self.tile_size,tilemap_y*self.tile_size,self.tile_size,self.tile_size))
+
 
                         # 2 =================================================================
 
@@ -153,7 +165,13 @@ class MainGame:
                         if tile_info[3] == 1:
                             main_game.tile_boarder((255,0,0,0),[tilemap_x,tilemap_y])
 
+                        if tile_info[3] == 2:
+                            main_game.tile_boarder((0,255,0,0),[tilemap_x,tilemap_y])
+
+
             main_game.tile_boarder((255,255,255,0),[self.mouse_pos[0]//self.tile_size,self.mouse_pos[1]//self.tile_size])
+
+            self.screen.blit(self.country_surface, (0, 0))
 
             pygame.display.update()
 
@@ -165,7 +183,18 @@ class MainGame:
                     self.mouse_pos = event.pos
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    (self.tilemap[self.mouse_pos[0]//self.tile_size][self.mouse_pos[1]//self.tile_size])[3] = 2
+                    self.army_green = [self.mouse_pos[0]//self.tile_size,self.mouse_pos[1]//self.tile_size]
+
+                if event.type == pygame.MOUSEBUTTONUP:
                     (self.tilemap[self.mouse_pos[0]//self.tile_size][self.mouse_pos[1]//self.tile_size])[3] = 1
+                    self.army_red = [self.mouse_pos[0]//self.tile_size,self.mouse_pos[1]//self.tile_size]
+
+                if event.type == pygame.KEYDOWN:
+
+                    if event.key == K_f:
+                        (self.tilemap[self.army_green[0]][self.army_green[1]])[2] -= 1
+                        (self.tilemap[self.army_red[0]][self.army_red[1]])[2] -= 1
 
             self.clock.tick(self.window_fps)
 
